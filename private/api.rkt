@@ -1,4 +1,4 @@
-#lang racket
+#lang racket/base
 
 (provide (prefix-out 4ch- (combine-out boards
                                        threads
@@ -7,8 +7,9 @@
                                        page
                                        thread)))
 
-(require "http.rkt"
-         "logger.rkt")
+(require racket/function
+         racket/list
+         "http.rkt")
 
 (define BASE-URL "https://a.4cdn.org/")
 

@@ -1,53 +1,16 @@
-#lang racket
+#lang racket/base
 
-(require "http.rkt"
+(require net/base64
          openssl/md5
-         net/base64
+         racket/file
+         racket/port
          "api.rkt"
+         "http.rkt"
          "logger.rkt")
 
 (provide (prefix-out 4ch- (combine-out download-file download-thread-images)))
 
 (define BASE-URL "https://i.4cdn.org/")
-
-(define (my-copy-port src dest . dests*)
-  (unless (input-port? src)
-    (raise-type-error 'copy-port "input-port" src))
-  (for-each
-   (lambda (dest)
-     (unless (output-port? dest)
-       (raise-type-error 'copy-port "output-port" dest)))
-   (cons dest dests*))
-
-  (define sz 4096)
-  (define s (make-bytes sz))
-  (define dests (cons dest dests*))
-  (define read-count 0)
-
-  (let loop ()
-    (log-4ch-debug "Copy beginning of (loop)")
-    (define c (read-bytes-avail! s src))
-    (cond
-      [(number? c)
-       (set! read-count (+ read-count c))
-       (log-4ch-debug "Writing ~a bytes (~a total)" c read-count)
-       (for ([dest (in-list dests)])
-         (let write-loop ([bytes-written 0])
-           (unless (= bytes-written c)
-             (define c2 (write-bytes-avail s dest bytes-written c))
-             (write-loop (+ bytes-written c2)))))
-       (loop)]
-      [(procedure? c)
-       (log-4ch-debug "Proc")
-       (define-values (l col p) (port-next-location src))
-       (define v (c (object-name src) l col p))
-       (for ([dest (in-list dests)])
-         (write-special v dest))
-       (loop)]
-      [else
-       (log-4ch-debug "EOF")
-       ;; Must be EOF
-       (void)])))
 
 (define (download-file url filename [digest #f])
   (if (and digest (file-exists? filename) (bytes=? digest (call-with-input-file filename md5-bytes)))
@@ -62,11 +25,10 @@
                 (λ (out)
                   (log-4ch-debug "(port-closed? in) = ~a (port-closed? out) = ~a" (port-closed? in) (port-closed? out))
                   (collect-garbage)
-                  (my-copy-port in out)
+                  (copy-port in out)
                   ;; Tell GC we still want the response object around (and
                   ;; leave its input port alone until we're finished with it).
-                  #;res
-                  )
+                  res)
                 #:exists 'truncate))
             (log-4ch-warning "Got bad response from server: ~a" (response-status-line res))))))
 

@@ -1,10 +1,13 @@
-#lang racket
+#lang racket/base
 
 (module+ main
   (require "private/download.rkt"
            "private/url.rkt"
            "private/logger.rkt"
-           racket/logging)
+           racket/logging
+           racket/cmdline
+           racket/function
+           racket/match)
   (define dir (make-parameter (current-directory)))
   (define verbosity (make-parameter 'error))
   [command-line
