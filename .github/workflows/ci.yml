@@ -17,6 +17,6 @@ jobs:
           variant: ${{ matrix.racket-variant }}
           version: ${{ matrix.racket-version }}
       - name: install
-        run: raco pkg install --auto --link 4chdl
+        run: raco pkg install --auto --name 4chdl
       - name: test
         run: raco test -e -p 4chdl
