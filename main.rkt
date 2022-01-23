@@ -1,9 +1,14 @@
 #lang racket/base
 
+(require "private/download.rkt"
+         "private/api.rkt")
+
+(provide (all-from-out "private/api.rkt"
+                       "private/download.rkt"))
+
 (module+ main
-  (require "private/download.rkt"
+  (require "private/logger.rkt"
            "private/url.rkt"
-           "private/logger.rkt"
            racket/logging
            racket/cmdline
            racket/function
