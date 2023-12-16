@@ -1,6 +1,7 @@
 4chdl
 =====
 
+[![No Maintenance Intended](https://unmaintained.tech/badge.svg)](https://unmaintained.tech/)
 [![CI](https://github.com/winny-/4chdl/actions/workflows/ci.yml/badge.svg)](https://github.com/winny-/4chdl/actions/workflows/ci.yml)
 
 4chan image downloader and library to interact with the JSON API.  Use this to
